@@ -17,7 +17,7 @@ from .nn import (
 # from module_test.mlla_attnres_e2 import *
 # from module_test.a22_UpSample_lp import *
 
-from module_test.a41_mlla_kan import *
+from module_test.a42_mlla_group import *
 
 
 class SiLU(nn.Module):
@@ -429,7 +429,7 @@ class UNet(nn.Module):
                         #     use_new_attention_order=use_new_attention_order,
                         # )
                         # MultiLevelSCSA_scaler(dim=ch)
-                        MKLAttention(ch)
+                        MLLAttentionWithGroupedNorm(ch)
                     )
                 self.input_blocks.append(EmbedSequential(*layers))
                 self._feature_size += ch
@@ -475,7 +475,7 @@ class UNet(nn.Module):
             # ),
             # MultiLevelSCSA_scaler(dim=ch),
             # MLLAttention(ch),
-            MKLAttention(ch),
+            MLLAttentionWithGroupedNorm(ch),
             ResBlock(
                 ch,
                 cond_embed_dim,
@@ -512,7 +512,7 @@ class UNet(nn.Module):
                         # )
                         # MultiLevelSCSA_scaler(dim=ch)
                         # MLLAttention(ch)
-                        MKLAttention(ch)
+                        MLLAttentionWithGroupedNorm(ch)
                     )
                 if level and i == res_blocks:
                     out_ch = ch
