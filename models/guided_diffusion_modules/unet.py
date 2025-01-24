@@ -14,8 +14,11 @@ from .nn import (
 )
 
 # from module_test.MultiLevelSCSA_scaler3579 import *
-from module_test.mlla_attnres_e2 import *
-from module_test.a22_UpSample_lp import *
+# from module_test.mlla_attnres_e2 import *
+# from module_test.a22_UpSample_lp import *
+
+from module_test.a41_mlla_kan import *
+
 
 class SiLU(nn.Module):
     def forward(self, x):
@@ -61,12 +64,12 @@ class Upsample(nn.Module):
         self.use_conv = use_conv
         if use_conv:
             self.conv = nn.Conv2d(self.channels, self.out_channel, 3, padding=1)
-        self.upsample_lp = DySample_UP(in_channels=channels,scale=2,style='lp')
+        # self.upsample_lp = DySample_UP(in_channels=channels,scale=2,style='lp')
 
     def forward(self, x):
         assert x.shape[1] == self.channels
-        # x = F.interpolate(x, scale_factor=2, mode="nearest")
-        x = self.upsample_lp(x)
+        x = F.interpolate(x, scale_factor=2, mode="nearest")
+        # x = self.upsample_lp(x)
         if self.use_conv:
             x = self.conv(x)
         return x
@@ -426,8 +429,7 @@ class UNet(nn.Module):
                         #     use_new_attention_order=use_new_attention_order,
                         # )
                         # MultiLevelSCSA_scaler(dim=ch)
-
-                        MLLAttention(ch)
+                        MKLAttention(ch)
                     )
                 self.input_blocks.append(EmbedSequential(*layers))
                 self._feature_size += ch
@@ -472,8 +474,8 @@ class UNet(nn.Module):
             #     use_new_attention_order=use_new_attention_order,
             # ),
             # MultiLevelSCSA_scaler(dim=ch),
-            MLLAttention(ch),
-
+            # MLLAttention(ch),
+            MKLAttention(ch),
             ResBlock(
                 ch,
                 cond_embed_dim,
@@ -509,7 +511,8 @@ class UNet(nn.Module):
                         #     use_new_attention_order=use_new_attention_order,
                         # )
                         # MultiLevelSCSA_scaler(dim=ch)
-                        MLLAttention(ch)
+                        # MLLAttention(ch)
+                        MKLAttention(ch)
                     )
                 if level and i == res_blocks:
                     out_ch = ch
